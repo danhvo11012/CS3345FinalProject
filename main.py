@@ -8,65 +8,100 @@ version: 1.0
 print('Final Project CS 3345')
 
 
+class TrieNode:
+
+    # Trie node class
+    def __init__(self):
+        self.value = None
+        self.children = [None] * 26
+        self.isEnd = False
+        self.count = 0
+
+
 class Trie:
-    def __init__(self, node):
-        """
-        Constructor
-        """
-        self.node = node
-        print("Tried created")
 
-    def insert(s: str):
-        """
-        Insert method
-        """
-        print("Insert ", s, " into this Trie")
-        node = root
-        for char in s:
-            is_found = False
-            # Search for the character in the children of the present `node`
-            for child in node.children:
-                if child.value == char:
-                    # We found it, increase the counter by 1 to keep track that another
-                    # word has it as well
-                    child.count += 1
-                    # And point the node to the child that contains this char
-                    node = child
-                    is_found = True
-                    break
-            # We did not find it so add a new chlid
-            if not is_found:
-                new_node = Node(char)
-                node.children.append(new_node)
-                # And then point node to the new child
-                node = new_node
-        # Everything finished. Mark it as the end of a word.
-        node.word_finished = True
+    # Trie data structure class
+    def __init__(self):
+        self.root = TrieNode()
 
-    def find(self, string):
-        """
-        Find method
-        """
-        print("Finding ", string, " in this Trie")
+    def insert(self, key):
 
-    def predict(self, string, n):
-        """
-        Predict method
-        """
-        print("predicting string: ", string, " with n = ", n)
+        # If not present, inserts key into trie
+        # If the key is prefix of trie node,
+        # just marks leaf node
+        root = self.root
+        length = len(key)
+        for level in range(length):
+            index = (ord(key[level]) - ord('a'))
+
+            # if current character is not present
+            if not root.children[index]:
+                root.children[index] = TrieNode()
+
+            root.count += 1
+            root.value = ord(key[level])
+            root = root.children[index]
+
+        # mark last node as leaf
+        root.isEnd = True
 
 
-class Node:
-    def __init__(self, value, isEnd, count, children):
-        self.value = value
-        self.isEnd = isEnd
-        self.count = count
-        self.children = children
-        print("Node created")
+    def find(self, key):
+
+        # Search key in the trie
+        # Returns true if key presents and false otherwise
+        root = self.root
+        length = len(key)
+        for level in range(length):
+            index = (ord(key[level]) - ord('a'))
+            if not root.children[index]:
+                return False
+            root = root.children[index]
+
+        return root != None and root.isEnd
+
+    def predict(self, key, num):
+        # Prediction
+        return "Predicted"
+
+def printWord(str, level):
 
 
-root = Node(1, True, 1, None)
-trie = Trie(root)
-trie.insert("String to insert")
-trie.find("String to find")
-trie.predict("String to predict", 2)
+    print('\n')
+    for i in range(level):
+        if str[level]:
+            print(chr(str[i]), end="")
+
+
+def printAllWords(root, wArray, level=0):
+    if not root:
+        return
+    if root.isEnd:
+        printWord(wArray, level)
+    for i in range(26):
+        if root.children[i]:
+            wArray[level] = i + ord('a')
+            printAllWords(root.children[i], wArray, level + 1)
+
+if __name__ == "__main__":
+
+    trie = Trie()
+
+    words = [
+        'test', 'apple', 'tester', 'ten', 'testing', 'tennant', 'tenure', 'tenacity', 'tentacle', 'tenantry',
+        'tendency', 'tent', 'tenor', 'tend', 'tenders', 'tend', 'tending', 'tender', 'test', 'test', 'test',
+        'quarintine', 'quaffle', 'quarrel', 'quirrell', 'quirrell', 'quirrell', 'quirrell', 'quaffle', 'quaffle',
+        'quaffle', 'quaffle', 'quarintine',
+    ]
+
+    for word in words:
+        trie.insert(word)
+
+    level = 0
+    str = [None]*20
+    print("Content: ")
+    printAllWords(trie.root, str)
+
+    #
+    # print(trie.predict('te', 2))  # returns ['test', 'tend']
+    # print(trie.predict('qu', 3))  # returns ['quaffle', 'quirrell', 'quarintine']
