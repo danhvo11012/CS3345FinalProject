@@ -1,16 +1,18 @@
-"""Final Project
+"""Final Project CS3345
 
 Implement a Trie that will maintain strings it has already seen.
+The Project file contains only two classes: Trie and TrieNode
+
 author: Danh Vo
 date: 04/20/2020
 version: 1.0
 """
-print('Final Project CS 3345')
 
 
 class TrieNode:
-
-    # Trie node class
+    """
+    Class TrieNode. Blueprint of a Trie's node
+    """
     def __init__(self):
         self.value = None
         self.children = [None] * 26
@@ -19,30 +21,27 @@ class TrieNode:
 
 
 class Trie:
-
-    # Trie data structure class
+    """
+    Class Trie. Skeleton of the Trie class
+    """
     def __init__(self):
         self.root = TrieNode()
 
     def insert(self, key):
 
-        # If not present, inserts key into trie
-        # If the key is prefix of trie node,
-        # just marks leaf node
         root = self.root
         length = len(key)
+
         for level in range(length):
             index = (ord(key[level]) - ord('a'))
 
-            # if current character is not present
             if not root.children[index]:
                 root.children[index] = TrieNode()
 
-            root.count += 1
-            root.value = ord(key[level])
             root = root.children[index]
+            root.value = key[level]
 
-        # mark last node as leaf
+        root.count += 1
         root.isEnd = True
 
 
@@ -60,29 +59,94 @@ class Trie:
 
         return root != None and root.isEnd
 
-    def predict(self, key, num):
-        # Prediction
-        return "Predicted"
+    # Helper functions to display the Trie content from a node
+    def getWord(self, preFix, wList, str, level):
+        word = ""
+        word += preFix
+        for i in range(level):
+            word += chr(str[i])
+        wList.append(word)
 
-def printWord(str, level):
+    def getAllWords(self, parentValue, wList, root, wordArray, level=0):
+        if not root:
+            return None
+
+        if root.isEnd:
+            preFix = root.count
+            self.getWord(str(preFix) + parentValue, wList, wordArray, level)
+
+        for i in range(26):
+            if root.children[i]:
+                wordArray[level] = i + ord('a')
+                self.getAllWords(parentValue, wList, root.children[i], wordArray, level + 1)
+
+    def countCmp(self, e):
+        """
+        Sorting helper function
+        """
+        return e.count
+
+    def getNPossibleWords(self, prefix, root, n):
+
+        nodeList = []
+        for child in root.children:
+            if child:
+                nodeList.append(child)
+
+        # Sort child List based on word count
+        nodeList.sort(reverse=True, key=self.countCmp)
+
+        wordArray = [None] * 20
+        wordList = []
+
+        # Display sorted child list
+        for node in nodeList:
+            # print(node.value, node.count)
+            self.getAllWords(prefix + node.value, wordList, node, wordArray)
+
+        wordList.sort(reverse=True)
+        result = wordList[0:n]
+        print(result)
 
 
-    print('\n')
-    for i in range(level):
-        if str[level]:
-            print(chr(str[i]), end="")
+    def dfs(self, prefix, root, word, n):
+
+        for neighbour in root.children:
+
+            if neighbour:
+                neighbour.count += 1
+
+                if neighbour.value == word[0]:
+                    if len(word) > 1:
+                        self.dfs(prefix, neighbour, word[1:], n)
+                    else:
+                        self.getNPossibleWords(prefix, neighbour, n)
+
+    def predict(self, word, n):
+        stack = [char for char in word]
+        self.dfs(word, self.root, word, n)
 
 
-def printAllWords(root, wArray, level=0):
-    if not root:
-        return
-    if root.isEnd:
-        printWord(wArray, level)
-    for i in range(26):
-        if root.children[i]:
-            wArray[level] = i + ord('a')
-            printAllWords(root.children[i], wArray, level + 1)
+# # Helper function to display the Trie content
+# def printWord(str, level):
+#     print(', ')
+#     for i in range(level):
+#         print(chr(str[i]), end="")
+#
+#
+# def printAllWords(root, wordArray, level=0):
+#     if not root:
+#         return None
+#
+#     if root.isEnd:
+#         printWord(wordArray, level)
+#
+#     for i in range(26):
+#         if root.children[i]:
+#             wordArray[level] = i + ord('a')
+#             printAllWords(root.children[i], wordArray, level + 1)
 
+# Main function for testing purposes
 if __name__ == "__main__":
 
     trie = Trie()
@@ -97,10 +161,11 @@ if __name__ == "__main__":
     for word in words:
         trie.insert(word)
 
-    level = 0
-    str = [None]*20
-    print("Content: ")
-    printAllWords(trie.root, str)
+    # print("Content: ")
+    # printAllWords(trie.root, str)
+
+    trie.predict('te', 2)
+    trie.predict('qu', 3)
 
     #
     # print(trie.predict('te', 2))  # returns ['test', 'tend']
