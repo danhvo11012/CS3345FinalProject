@@ -106,6 +106,9 @@ class Trie:
 
         wordList.sort(reverse=True)
         result = wordList[0:n]
+        for index, resultWord in enumerate(result):
+            result[index] = resultWord[1:]
+
         print(result)
 
 
@@ -127,25 +130,6 @@ class Trie:
         self.dfs(word, self.root, word, n)
 
 
-# # Helper function to display the Trie content
-# def printWord(str, level):
-#     print(', ')
-#     for i in range(level):
-#         print(chr(str[i]), end="")
-#
-#
-# def printAllWords(root, wordArray, level=0):
-#     if not root:
-#         return None
-#
-#     if root.isEnd:
-#         printWord(wordArray, level)
-#
-#     for i in range(26):
-#         if root.children[i]:
-#             wordArray[level] = i + ord('a')
-#             printAllWords(root.children[i], wordArray, level + 1)
-
 # Main function for testing purposes
 if __name__ == "__main__":
 
@@ -160,9 +144,6 @@ if __name__ == "__main__":
 
     for word in words:
         trie.insert(word)
-
-    # print("Content: ")
-    # printAllWords(trie.root, str)
 
     trie.predict('te', 2)
     trie.predict('qu', 3)
