@@ -158,23 +158,3 @@ class Trie:
                     return self.__dfs(prefix, neighbour, word[1:], n, res)
 
         return res
-
-
-# Main function for testing purposes
-if __name__ == "__main__":
-
-    trie = Trie()
-
-    words = [
-        'test',
-        'apple', 'tester', 'ten', 'testing', 'tennant', 'tenure', 'tenacity', 'tentacle', 'tenantry',
-        'tendency', 'tent', 'tenor', 'tend', 'tenders', 'tend', 'tending', 'tender', 'test', 'test', 'test',
-        'quarintine', 'quaffle', 'quarrel', 'quirrell', 'quirrell', 'quirrell', 'quirrell', 'quaffle', 'quaffle',
-        'quaffle', 'quaffle', 'quarintine',
-    ]
-
-    for word in words:
-        trie.insert(word)
-
-    print(trie.predict('te', 2))  # returns ['test', 'tend']
-    print(trie.predict('qu', 3))  # returns ['quaffle', 'quirrell', 'quarintine']
