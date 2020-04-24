@@ -86,7 +86,7 @@ class Trie:
         """
         return e.count
 
-    def getNPossibleWords(self, prefix, root, n):
+    def getNPossibleWords(self, res, prefix, root, n):
 
         nodeList = []
         for child in root.children:
@@ -105,14 +105,15 @@ class Trie:
             self.getAllWords(prefix + node.value, wordList, node, wordArray)
 
         wordList.sort(reverse=True)
-        result = wordList[0:n]
-        for index, resultWord in enumerate(result):
-            result[index] = resultWord[1:]
+        rawResult = wordList[0:n]
+        for index, resultWord in enumerate(rawResult):
+            rawResult[index] = resultWord[1:]
 
-        print(result)
+        res = rawResult[:]
 
+        return res
 
-    def dfs(self, prefix, root, word, n):
+    def dfs(self, prefix, root, word, n, res=[],):
 
         for neighbour in root.children:
 
@@ -120,14 +121,16 @@ class Trie:
                 neighbour.count += 1
 
                 if neighbour.value == word[0]:
-                    if len(word) > 1:
-                        self.dfs(prefix, neighbour, word[1:], n)
+                    if len(word) == 1:
+                        return self.getNPossibleWords(res, prefix, neighbour, n)
+
                     else:
-                        self.getNPossibleWords(prefix, neighbour, n)
+                        return self.dfs(prefix, neighbour, word[1:], n, res)
+
+        return res
 
     def predict(self, word, n):
-        stack = [char for char in word]
-        self.dfs(word, self.root, word, n)
+        return(self.dfs(word, self.root, word, n))
 
 
 # Main function for testing purposes
@@ -145,9 +148,6 @@ if __name__ == "__main__":
     for word in words:
         trie.insert(word)
 
-    trie.predict('te', 2)
-    trie.predict('qu', 3)
 
-    #
-    # print(trie.predict('te', 2))  # returns ['test', 'tend']
-    # print(trie.predict('qu', 3))  # returns ['quaffle', 'quirrell', 'quarintine']
+    print(trie.predict('te', 2))  # returns ['test', 'tend']
+    print(trie.predict('qu', 3))  # returns ['quaffle', 'quirrell', 'quarintine']
